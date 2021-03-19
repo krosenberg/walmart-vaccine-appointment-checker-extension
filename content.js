@@ -55,8 +55,6 @@ function getCookie(cname) {
 	return "";
 }
 
-const cid = getCookie("ACID");
-
 function getStoresFromList() {
 	return Array.from(
 		document.querySelectorAll(".store-list-container > div > label")
@@ -84,6 +82,7 @@ function unmarkAllStores() {
 }
 
 function checkStoreInventory(store) {
+	const cid = getCookie("CID");
 	walmartRequest(
 		"GET",
 		`/pharmacy/v2/clinical-services/inventory/store/${store.storeId}/${cid}?type=imz`,
@@ -102,6 +101,8 @@ function checkStoreInventory(store) {
 
 function checkStoreAppointments(store) {
 	const { storeId } = store;
+	const cid = getCookie("CID");
+
 	walmartRequest("POST", `/pharmacy/v2/clinical-services/time-slots/${cid}`, {
 		startDate: getDates()[0],
 		endDate: getDates()[1],
