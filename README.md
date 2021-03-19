@@ -1,5 +1,5 @@
 
-### Note: this extension is not yet published in the Chome Extension directory. In the meantime, you can download this code and use the instructions [here](https://dev.to/ben/how-to-install-chrome-extensions-manually-from-github-1612) to load the extention into your Chrome browser.
+### Note: this extension is not yet published in the Chome Extension directory. In the meantime, you can download this code and use the instructions [here](https://dev.to/ben/how-to-install-chrome-extensions-manually-from-github-1612) to load the extension into your Chrome browser.
 
 # Walmart Vaccine Appointment Checker
 
