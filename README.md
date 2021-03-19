@@ -9,3 +9,4 @@ On page load, the extension will query each Walmart location shown in the "Find 
 
 If you change the location search or want to check again, use the "Check again" button at the top of the page.
 
+I wrote this really fast and my JS code is really messy. Feel free to open a PR to clean it up or to add new features/UI improvements!
