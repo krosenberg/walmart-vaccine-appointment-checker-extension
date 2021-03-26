@@ -2,8 +2,9 @@
 	"manifest_version": 2,
 
 	"name": "Walmart Vaccine Appointment Checker",
-	"version": "0.1.0",
-	"description": "Checks all area Walmart Pharmacy locations for appointments without having to navigate to each location one at a time.",
+	"version": "0.2.0",
+	"description":
+		"Checks all area Walmart Pharmacy locations for appointments without having to navigate to each location one at a time.",
 
 	"content_scripts": [
 		{
