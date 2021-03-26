@@ -1,13 +1,14 @@
 .wm-appt-slots.available {
-	background-color: rgba(27, 158, 119, 0.9) !important;
+  background-color: rgba(27, 158, 119, 0.9) !important;
 }
 
 .wm-appt-slots.unavailable {
-	background-color: rgba(217, 95, 2, 0.3) !important;
+  background-color: rgba(217, 95, 2, 0.3) !important;
 }
 
 .wm-appt-slots-container {
-	background-color: #dddddd;
-	border: 2px solid #444444;
-	padding: 0px 10px 10px;
+  background-color: #dddddd;
+  border: 2px solid #444444;
+  padding: 0px 10px 10px;
+  margin: 5px 0px;
 }

@@ -140,32 +140,77 @@ function incrementCount() {
 }
 
 function renderHeaderBox() {
-  const $pageTitle = document.querySelector("[data-automation-id=page-title]");
+  const $pageTitle = document.querySelector("article");
   const $contents = document.createElement("div");
   $contents.classList.add("wm-appt-slots-container");
   $contents.innerHTML = `
-			<p>
-				Locations with appointments in the next 7 days: <span class="wm-appt-slots-count">0</span>
+				<h3>Locations with appointments in the next 7 days: <span class="wm-appt-slots-count">0</span></h3>
 				<button class="wm-appt-slots-button">🔁Check again</button>
-			</p>`;
+				<br/>
+				<label><input id="auto-run" type="checkbox" /> Auto-run every 20 seconds</label>
+				<br/>
+				<label><input id="alert-if-found" type="checkbox" /> Alert if appointment is avaialble</label>
+			`;
 
   $pageTitle.insertBefore($contents, $pageTitle.firstChild);
 
   const $button = document.querySelector(".wm-appt-slots-button");
-
   $button.addEventListener("click", handleClick);
 
-  const $count = document.querySelector(".wm-appt-slots-count");
+  const $autoRunCheckbox = document.querySelector(
+    ".wm-appt-slots-container #auto-run"
+  );
+
+  $autoRunCheckbox.addEventListener("change", () => {
+    $autoRunCheckbox.checked ? enableAutoRun() : disableAutoRun();
+  });
+
+  const $alertCheckbox = document.querySelector(
+    ".wm-appt-slots-container #alert-if-found"
+  );
+
+  $alertCheckbox.addEventListener("change", () => {
+    $alertCheckbox.checked ? enableAlertIfFound() : disableAlertIfFound();
+  });
+
+  let autoRunEnabled = false;
+
+  function enableAutoRun() {
+    autoRunEnabled = true;
+    handleClick().then(() => {
+      setTimeout(() => {
+        autoRunEnabled && enableAutoRun();
+      }, 20000);
+    });
+  }
+
+  function disableAutoRun() {
+    $button.innerText = "🔁Check Again";
+    $button.disabled = false;
+    autoRunEnabled = false;
+  }
+
+  let alertIfFound = false;
+
+  function enableAlertIfFound() {
+    alertIfFound = true;
+  }
+
+  function disableAlertIfFound() {
+    alertIfFound = false;
+  }
 
   const $storeListContainerParent = document.querySelector(
     ".store-finder-search-container .well"
   );
 
+  const $count = document.querySelector(".wm-appt-slots-count");
+
   var observer = new MutationObserver(function(mutations) {
     for (mutation of mutations) {
       for (addedNode of mutation.addedNodes) {
         if (addedNode === document.querySelector(".store-list-container")) {
-          handleClick();
+          !autoRunEnabled && handleClick();
         }
       }
     }
@@ -184,22 +229,37 @@ function renderHeaderBox() {
     availableLocationCount = 0;
     $count.innerText = availableLocationCount;
 
-    check().then(() => {
-      $button.disabled = false;
-      $button.innerText = "🔁Check again";
+    return Promise.all(
+      getStoresFromList().map(checkStoreInventory)
+    ).then(() => {
+      const appointmentsAvailable = $count.innerText !== "0";
+      if (appointmentsAvailable) {
+        if (alertIfFound) {
+          setTimeout(() => {
+            alert(
+              "An appointment was found! Look for the location that is colored green."
+            );
+          });
+        }
+        autoRunEnabled && $autoRunCheckbox.click();
+      }
+      if (autoRunEnabled) {
+        $button.innerText = "Auto checking again in 20 seconds";
+      } else {
+        $button.innerText = "🔁Check Again";
+        $button.disabled = false;
+      }
     });
   }
-}
 
-function check() {
-  return Promise.all(getStoresFromList().map(checkStoreInventory));
+  // auto-run the first time
+  handleClick();
 }
 
 var observer = new MutationObserver(function(mutations) {
   if (document.querySelector(".store-list-container")) {
     observer.disconnect();
     renderHeaderBox();
-    check();
   }
 });
 
