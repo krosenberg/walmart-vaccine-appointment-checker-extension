@@ -174,20 +174,20 @@ function renderHeaderBox() {
   });
 
   let autoRunEnabled = false;
+  let timer;
 
   function enableAutoRun() {
     autoRunEnabled = true;
-    handleClick().then(() => {
-      setTimeout(() => {
-        autoRunEnabled && enableAutoRun();
-      }, 20000);
-    });
+    handleClick();
+    decrementButtonTimerCounter();
   }
 
   function disableAutoRun() {
     $button.innerText = "🔁Check Again";
     $button.disabled = false;
     autoRunEnabled = false;
+    secondsLeft = 20;
+    clearTimeout(timer);
   }
 
   let alertIfFound = false;
@@ -198,6 +198,24 @@ function renderHeaderBox() {
 
   function disableAlertIfFound() {
     alertIfFound = false;
+  }
+
+  let secondsLeft = 20;
+  let checkingInProgress = false;
+  function decrementButtonTimerCounter() {
+    if (!checkingInProgress) {
+      secondsLeft--;
+      $button.innerText = `Auto checking again in ${secondsLeft} seconds`;
+    }
+    timer = setTimeout(() => {
+      if (autoRunEnabled) {
+        if (secondsLeft === 0) {
+          handleClick();
+          secondsLeft = 20;
+        }
+        decrementButtonTimerCounter();
+      }
+    }, 1000);
   }
 
   const $storeListContainerParent = document.querySelector(
@@ -226,30 +244,40 @@ function renderHeaderBox() {
     $button.disabled = true;
     $button.innerText = "checking...";
 
+    checkingInProgress = true;
+    $autoRunCheckbox.disabled = true;
+    $alertCheckbox.disabled = true;
     availableLocationCount = 0;
     $count.innerText = availableLocationCount;
 
-    return Promise.all(
-      getStoresFromList().map(checkStoreInventory)
-    ).then(() => {
-      const appointmentsAvailable = $count.innerText !== "0";
-      if (appointmentsAvailable) {
-        if (alertIfFound) {
-          setTimeout(() => {
-            alert(
-              "An appointment was found! Look for the location that is colored green."
-            );
-          });
+    return Promise.all(getStoresFromList().map(checkStoreInventory))
+      .then(() => {
+        checkingInProgress = false;
+        $autoRunCheckbox.disabled = false;
+        $alertCheckbox.disabled = false;
+        const appointmentsAvailable = $count.innerText !== "0";
+        if (appointmentsAvailable) {
+          if (alertIfFound) {
+            setTimeout(() => {
+              alert(
+                "An appointment was found! Look for the location that is colored green."
+              );
+            });
+          }
+          autoRunEnabled && $autoRunCheckbox.click();
         }
-        autoRunEnabled && $autoRunCheckbox.click();
-      }
-      if (autoRunEnabled) {
-        $button.innerText = "Auto checking again in 20 seconds";
-      } else {
-        $button.innerText = "🔁Check Again";
-        $button.disabled = false;
-      }
-    });
+        if (autoRunEnabled) {
+          $button.innerText = "Auto checking again in 20 seconds";
+        } else {
+          $button.innerText = "🔁Check Again";
+          $button.disabled = false;
+        }
+      })
+      .catch(() => {
+        alert(
+          "There was a problem checking for appointments. Reload the page to fix the issue. If the problem continues after reload there may be a problem with Walmart's servers."
+        );
+      });
   }
 
   // auto-run the first time
