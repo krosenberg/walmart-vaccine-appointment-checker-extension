@@ -157,6 +157,20 @@ function renderHeaderBox() {
     ".store-finder-search-container .well"
   );
 
+  var observer = new MutationObserver(function(mutations) {
+    for (mutation of mutations) {
+      for (addedNode of mutation.addedNodes) {
+        if (addedNode === document.querySelector(".store-list-container")) {
+          handleClick();
+        }
+      }
+    }
+  });
+
+  observer.observe($storeListContainerParent, {
+    childList: true
+  });
+
   function handleClick() {
     unmarkAllStores();
     // Disable the button for 5 seconds to prevent too many requests
