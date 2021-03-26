@@ -83,7 +83,7 @@ function unmarkAllStores() {
 
 function checkStoreInventory(store) {
   const cid = getCookie("CID");
-  walmartRequest(
+  return walmartRequest(
     "GET",
     `/pharmacy/v2/clinical-services/inventory/store/${store.storeId}/${cid}?type=imz`,
     {}
@@ -91,7 +91,7 @@ function checkStoreInventory(store) {
     const hasInventory = resp.data.inventory.filter(s => s.quantity > 0).length;
 
     if (hasInventory) {
-      checkStoreAppointments(store);
+      return checkStoreAppointments(store);
     } else {
       markStore(store, false);
     }
@@ -102,11 +102,15 @@ function checkStoreAppointments(store) {
   const { storeId } = store;
   const cid = getCookie("CID");
 
-  walmartRequest("POST", `/pharmacy/v2/clinical-services/time-slots/${cid}`, {
-    startDate: getDates()[0],
-    endDate: getDates()[1],
-    imzStoreNumber: { USStoreId: storeId }
-  }).then(resp => {
+  return walmartRequest(
+    "POST",
+    `/pharmacy/v2/clinical-services/time-slots/${cid}`,
+    {
+      startDate: getDates()[0],
+      endDate: getDates()[1],
+      imzStoreNumber: { USStoreId: storeId }
+    }
+  ).then(resp => {
     const daysWithSlots = resp.data.slotDays.filter(sd => sd.slots.length);
 
     if (daysWithSlots.length) {
@@ -176,20 +180,19 @@ function renderHeaderBox() {
     // Disable the button for 5 seconds to prevent too many requests
     $button.disabled = true;
     $button.innerText = "checking...";
-    setTimeout(() => {
-      $button.disabled = false;
-      $button.innerText = "🔁Check again";
-    }, 5000);
 
     availableLocationCount = 0;
     $count.innerText = availableLocationCount;
 
-    check();
+    check().then(() => {
+      $button.disabled = false;
+      $button.innerText = "🔁Check again";
+    });
   }
 }
 
 function check() {
-  getStoresFromList().forEach(checkStoreInventory);
+  return Promise.all(getStoresFromList().map(checkStoreInventory));
 }
 
 var observer = new MutationObserver(function(mutations) {
