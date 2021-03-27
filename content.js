@@ -136,7 +136,7 @@ let availableLocationCount = 0;
 
 function incrementCount() {
   const $count = document.querySelector(".wm-appt-slots-count");
-  $count.innerText = availableLocationCount++;
+  $count.innerText = availableLocationCount + 1;
 }
 
 function renderHeaderBox() {
@@ -191,8 +191,16 @@ function renderHeaderBox() {
   }
 
   let alertIfFound = false;
+  let usePushNotification = false;
 
   function enableAlertIfFound() {
+    if (Notification && Notification.permission !== "denied") {
+      Notification.requestPermission().then(function(permission) {
+        if (permission === "granted") {
+          usePushNotification = true;
+        }
+      });
+    }
     alertIfFound = true;
   }
 
@@ -259,9 +267,13 @@ function renderHeaderBox() {
         if (appointmentsAvailable) {
           if (alertIfFound) {
             setTimeout(() => {
-              alert(
-                "An appointment was found! Look for the location that is colored green."
-              );
+              const alertText =
+                "An appointment was found! Look for the location that is colored green.";
+              if (usePushNotification) {
+                new Notification("Appointment found!", { body: alertText });
+              } else {
+                alert(alertText);
+              }
             });
           }
           autoRunEnabled && $autoRunCheckbox.click();
