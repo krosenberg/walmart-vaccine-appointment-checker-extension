@@ -147,7 +147,7 @@ function renderHeaderBox() {
 				<h3>Locations with appointments in the next 7 days: <span class="wm-appt-slots-count">0</span></h3>
 				<button class="wm-appt-slots-button">🔁Check again</button>
 				<br/>
-				<label><input id="auto-run" type="checkbox" /> Auto-run every 20 seconds</label>
+				<label><input id="auto-run" type="checkbox" /> Auto-check every 20 seconds</label>
 				<br/>
 				<label><input id="alert-if-found" type="checkbox" /> Alert if appointment is avaialble</label>
 			`;
@@ -286,9 +286,16 @@ function renderHeaderBox() {
         }
       })
       .catch(() => {
-        alert(
-          "There was a problem checking for appointments. Reload the page to fix the issue. If the problem continues after reload there may be a problem with Walmart's servers."
-        );
+        $button.innerText = "Error - reload the page";
+        const errorText =
+          "There was a problem checking for appointments. You might need to log in again. Reload the page to fix the issue. If the problem continues after reload there may be a problem with Walmart's servers.";
+        if (usePushNotification) {
+          new Notification("Error - reload the page", { body: errorText });
+        } else {
+          alert(errorText);
+        }
+        $contents.querySelector("h3").innerText = errorText;
+        $contents.style.backgroundColor = "#FDF0F0";
       });
   }
 
