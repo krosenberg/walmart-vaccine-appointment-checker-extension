@@ -1,0 +1,28 @@
+{
+  "name": "walmart-vaccine-appointment-checker-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack && yarn copy:dist",
+    "copy:dist": "cp manifest.json ./src/styles.css ./dist",
+    "watch": "watch 'yarn build' ./src"
+  },
+  "author": "Kyle Rosenberg",
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/preset-env": "^7.5.5",
+    "babel": "^6.23.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "prettier": "2.2.1",
+    "resolve-url-loader": "^3.1.0",
+    "style-loader": "^1.0.0",
+    "watch": "^1.0.2",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7"
+  },
+  "dependencies": {
+    "preact": "^8.5.2"
+  }
+}
