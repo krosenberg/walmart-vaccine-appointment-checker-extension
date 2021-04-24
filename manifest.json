@@ -1,19 +1,13 @@
 {
   "manifest_version": 2,
   "name": "walmart-vaccine-appointment-checker-extension",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Checks all area Walmart Pharmacy locations for appointments without having to navigate to each location one at a time.",
   "content_scripts": [
     {
-      "css": [
-        "styles.css"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "matches": [
-        "https://www.walmart.com/pharmacy/clinical-services*"
-      ]
+      "css": ["styles.css"],
+      "js": ["content.js"],
+      "matches": ["https://www.walmart.com/pharmacy/clinical-services*"]
     }
   ],
   "short_name": "walmart-vaccine-appointment-checker-extension"
