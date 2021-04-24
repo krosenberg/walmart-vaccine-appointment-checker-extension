@@ -5,7 +5,8 @@
   "scripts": {
     "build": "webpack && yarn copy:dist",
     "copy:dist": "cp manifest.json ./src/styles.css ./dist",
-    "watch": "watch 'yarn build' ./src"
+    "watch": "watch 'yarn build' ./src",
+    "zip": "zip -vr dist.zip dist/ -x \"*.DS_Store\""
   },
   "author": "Kyle Rosenberg",
   "devDependencies": {
