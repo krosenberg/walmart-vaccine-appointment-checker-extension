@@ -1,13 +1,6 @@
 import * as Preact from "preact";
 import { h } from "preact";
-import { formatStoreName } from "./utils";
-
-function convertDatestampToString(datestamp) {
-  const monthNum = datestamp.substring(0, 2);
-  const dayNum = datestamp.substring(2, 4);
-  const yearNum = datestamp.substring(4, 8);
-  return `${monthNum}/${dayNum}/${yearNum}`;
-}
+import { convertDatestampToString, formatStoreName } from "./utils";
 
 export default ({ store, slots }) => {
   const numSlots = slots.reduce((memo, item) => {
