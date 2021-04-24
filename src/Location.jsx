@@ -32,12 +32,12 @@ export default ({ store, slots }) => {
       <dl>
         {daysWithAppointments.map(({ date, appointments }, index) => {
           return (
-            <Preact.Fragment key={index}>
+            <span key={index}>
               <dt>
                 <strong>{convertDatestampToString(date)}</strong>
               </dt>
               <dd>{appointments.join(", ")}</dd>
-            </Preact.Fragment>
+            </span>
           );
         })}
       </dl>

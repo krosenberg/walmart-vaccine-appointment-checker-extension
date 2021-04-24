@@ -21,6 +21,12 @@
   box-shadow: -3px 3px 6px #999;
 }
 
+.wm-appt-slots-container.hidden {
+  max-height: 25px;
+  max-width: 100px;
+  overflow: hidden;
+}
+
 details {
   border: 1px solid #aaa;
   border-radius: 4px;
@@ -37,4 +43,12 @@ summary {
 
 details[open] {
   padding: 0.5em;
+}
+
+.toggle-button {
+  position: absolute;
+  right: 5px;
+  top: -4px;
+  text-decoration: underline;
+  cursor: pointer;
 }

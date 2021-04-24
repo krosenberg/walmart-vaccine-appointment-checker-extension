@@ -113,7 +113,6 @@ var observer = new MutationObserver(function (mutations) {
     const $pageTitle = document.querySelector("article");
 
     const $contents = document.createElement("div");
-    $contents.classList.add("wm-appt-slots-container");
 
     $pageTitle.insertBefore($contents, $pageTitle.firstChild);
 
@@ -152,11 +151,13 @@ const fetchIfLocationChanges = (callback) => {
 };
 class App extends Preact.Component {
   state = {
-    isFetching: false,
-    locations: [],
-    shouldAutoCheck: false,
-    shouldAlert: false,
     hasAlertPermission: false,
+    isFetching: false,
+    isVisible: true,
+    locations: [],
+    shouldAlert: false,
+    shouldAutoCheck: false,
+    errorText: undefined,
   };
 
   componentDidMount() {
@@ -189,18 +190,43 @@ class App extends Preact.Component {
     this.setState({ isFetching: true, locations: [] });
     fetchAppointments(storesList)
       .then((locations) => {
-        this.setState({
-          locations: locations.filter(Boolean),
-        });
-        // TODO disable auto-check if there are locations with slots
+        locations = locations.filter(Boolean).filter((l) => l.slots.length);
+
+        if (locations.length) {
+          this.setState({ locations });
+          if (this.state.shouldAlert) {
+            this._sendAlert();
+          }
+        }
         if (this.state.shouldAutoCheck) {
           clearTimeout(this.timeout);
           this.timeout = setTimeout(this._maybeAutoCheckAppointments, 20000);
         }
       })
+      .catch(() => {
+        if (this.state.shouldAlert) {
+          new Notification("Error - Reload and sign in", {
+            body:
+              "There was an error fetching data. You probably need to reload the page and sign in again.",
+          });
+        }
+        this.setState({
+          isFetching: false,
+          shouldAlert: false,
+          shouldAutoCheck: false,
+          errorText:
+            "There was an error fetching data. You probably need to reload the page and sign in again.",
+        });
+      })
       .finally(() => {
         this.setState({ isFetching: false });
       });
+  };
+
+  _sendAlert = () => {
+    new Notification("Appointment found", {
+      body: "A vaccine appointment was found!",
+    });
   };
 
   _handleButtonClick = () => {
@@ -228,14 +254,30 @@ class App extends Preact.Component {
     }
   };
 
-  render() {
-    const { locations, isFetching, shouldAutoCheck, shouldAlert } = this.state;
-    const locationsWithAppointments = locations.filter((l) => l.slots.length);
+  _toggleContainer = () => {
+    this.setState((state) => ({ isVisible: !state.isVisible }));
+  };
 
-    // TODO add collapse toggle
+  render() {
+    const {
+      locations,
+      isFetching,
+      shouldAutoCheck,
+      shouldAlert,
+      isVisible,
+      errorText,
+    } = this.state;
 
     return (
-      <div>
+      <div className={`wm-appt-slots-container${isVisible ? "" : " hidden"}`}>
+        <div
+          tabindex="0"
+          role="button"
+          className="toggle-button"
+          onClick={this._toggleContainer}
+        >
+          <small>{isVisible ? "hide" : "show"}</small>
+        </div>
         <h3>💉 Walmart Vaccine Appointment Checker Extension</h3>
         <div>
           <button
@@ -257,6 +299,7 @@ class App extends Preact.Component {
             />{" "}
             Auto-check every 20 seconds
           </label>{" "}
+          <br />
           <label>
             <input
               type="checkbox"
@@ -269,18 +312,16 @@ class App extends Preact.Component {
         <hr />
         {locations.length ? (
           <div>
-            {locationsWithAppointments.length ? (
-              locationsWithAppointments.map(({ slots, store }, index) => (
-                <Location key={index} store={store} slots={slots} />
-              ))
-            ) : (
-              <p>No appointments found in the next 7 days</p>
-            )}
+            {locations.map((s, index) => (
+              <Location key={index} store={s.store} slots={s.slots} />
+            ))}
           </div>
         ) : isFetching ? (
           "searching..."
         ) : (
-          "No locations found"
+          <p>
+            {errorText ? errorText : "No appointments found in the next 7 days"}
+          </p>
         )}
       </div>
     );
