@@ -1,12 +1,13 @@
-
 ### You can add this extension to your browser from the Chrome Web Store: https://chrome.google.com/webstore/detail/walmart-vaccine-appointme/gfdedhgfabiobppblfphignbajnkolmc
 
 # Walmart Vaccine Appointment Checker
 
-This extension runs when you go to https://www.walmart.com/pharmacy/clinical-services. You need to have a Walmart account and be logged in order for the extention to search for appointments.
+![screenshot](https://i.imgur.com/cSxrLSF.png)
 
-On page load, the extension will query each Walmart location shown in the "Find a Pharmacy" list for vaccine appointments that are available in the next seven days. If a location has appointments, the location will turn green. Select the location with your mouse and press the "Continue" button.
+This extension runs when you go to https://www.walmart.com/pharmacy/clinical-services. You need to have a Walmart account and be logged in order for the extension to search for appointments.
 
-If you change the location search or want to check again, use the "Check again" button at the top of the page.
+On page load, the extension will query each Walmart location shown in the "Find a Pharmacy" list for vaccine appointments that are available in the next seven days. If a location has appointments, they will be listed in the frame on the right side of the page.
 
-I wrote this really fast and my JS code is really messy. Feel free to open a PR to clean it up or to add new features/UI improvements!
+If you update location criteria (zip/city/state or distance), the checker will automatically search for appointments again. If you want to manually check again, use the "Check again" button at the top of the page.
+
+You can choose to auto-check for appointments every 20 seconds. Your must keep the website loaded for the auto-checking to happen. After running for about 15 minutes, you may have to log in again to the website. You'll get an alert if this happens.
